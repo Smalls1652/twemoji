@@ -25,7 +25,7 @@ jobs:
 
             - name: Convert SVGs
               run: |
-                ./build/SvgConverter ./assets/svg/ ./converted/
+                ./build/SvgConverter ./assets/svg/ ./converted/ 512
 
             - name: Collect artifact
               uses: actions/upload-artifact@v4
