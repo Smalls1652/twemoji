@@ -7,6 +7,9 @@ jobs:
     generate-pngs:
         name: "Build CLI and convert SVGs"
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                image-size: [ 128, 256, 512 ]
         env:
             DOTNET_NOLOGO: true
         
@@ -25,11 +28,11 @@ jobs:
 
             - name: Convert SVGs
               run: |
-                ./build/SvgConverter ./assets/svg/ ./converted/ 512
+                ./build/SvgConverter ./assets/svg/ ./converted/ ${{ matrix.image-size }}
 
             - name: Collect artifact
               uses: actions/upload-artifact@v4
               with:
-                name: discord-twemoji-png-512
+                name: discord-twemoji-png-${{ matrix.image-size }}
                 path: ${{ github.workspace }}/converted/**/*
                 if-no-files-found: error
