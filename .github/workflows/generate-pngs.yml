@@ -1,0 +1,35 @@
+name: Generate PNGs
+
+on:
+    workflow_dispatch:
+
+jobs:
+    generate-pngs:
+        name: "Build CLI and convert SVGs"
+        runs-on: ubuntu-latest
+        env:
+            DOTNET_NOLOGO: true
+        
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET SDK
+              uses: actions/setup-dotnet@v4
+              with:
+                global-json-file: global.json
+
+            - name: Compile CLI tool
+              run: |
+                dotnet publish ./SvgConverter/ --configuration "Release" --runtime "linux-x64" --output "./build/" --self-contained
+
+            - name: Convert SVGs
+              run: |
+                ./build/SvgConverter ./assets/svg/ ./converted/
+
+            - name: Collect artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: discord-twemoji-png-512
+                path: ${{ github.workspace }}/converted/**/*
+                if-no-files-found: error
