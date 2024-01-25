@@ -12,6 +12,17 @@ try
 {
     string svgDirPath = args[0] ?? throw new ArgumentException("SVG directory path is required");
     string outDirPath = args[1] ?? throw new ArgumentException("Output directory path is required");
+    string outSize = args[2] ?? "512";
+
+    int outSizeInt;
+    try
+    {
+        outSizeInt = int.Parse(outSize);
+    }
+    catch (FormatException)
+    {
+        throw new ArgumentException("That's not an integer! 🤬");
+    }
 
     string svgDirPathResolved = Path.GetFullPath(svgDirPath);
 
@@ -61,25 +72,23 @@ try
                 path2: $"{Path.GetFileNameWithoutExtension(svgFiles[i])}.png"
             );
 
-            using (MagickImage image = new())
-            {
-                image.Format = MagickFormat.Svg;
-                image.BackgroundColor = MagickColors.None;
+            using MagickImage image = new();
 
-                image.Read(svgFiles[i], 512, 512);
-                image.Density = new Density(420, DensityUnit.PixelsPerInch);
-                //image.Resize(512, 512);
+            image.Format = MagickFormat.Svg;
+            image.BackgroundColor = MagickColors.None;
 
-                Console.WriteLine($"{Path.GetFileName(svgFiles[i])} -> {convertedImagePath}");
-                image.Write(convertedImagePath, MagickFormat.Png32);
-            }
+            image.Read(svgFiles[i], outSizeInt, outSizeInt);
+            image.Density = new Density(10, DensityUnit.PixelsPerInch);
+
+            Console.WriteLine($"[{i + 1}/{svgFiles.Length}] {Path.GetFileName(svgFiles[i])} -> {Path.GetRelativePath(Environment.CurrentDirectory, convertedImagePath)}");
+            image.Write(convertedImagePath, MagickFormat.Png8);
         }
 
         Console.WriteLine("Done! 🤌");
     }
     catch (OperationCanceledException)
     {
-        Console.WriteLine("\nOperation cancelled");
+        Console.WriteLine("\nOperation cancelled 😵");
     }
     catch (Exception)
     {
