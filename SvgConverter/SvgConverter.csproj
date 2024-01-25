@@ -10,10 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-arm64" Version="13.5.0" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.5.0" />
   </ItemGroup>
 
 </Project>
